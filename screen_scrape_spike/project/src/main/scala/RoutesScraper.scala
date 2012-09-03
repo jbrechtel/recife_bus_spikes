@@ -7,14 +7,27 @@ import java.net._
 import org.htmlcleaner._
 
 object RoutesScraper {
-  def getRoutes() = {
+  def getRoutes(): Seq[Route] = {
     val selectNode = getSelectNode()
     parseRoutesFromSelect(selectNode)
+    Seq(new Route("","",""))
   }
 
-  def getRoutes(text: String) = {
+  def getRoutes(text: String): Seq[Route] = {
     val selectNode = getSelectNode(text)
-    parseRoutesFromSelect(selectNode)
+    val routeIdNameTuple = parseRoutesFromSelect(selectNode)
+    val scriptNode = getScriptNode(text)
+
+    val routeIdNomeItinerarioTuple = scriptNode match {
+      case Some(node) => parseRoutesFromJavascript(node)
+      case None       => Nil
+    }
+
+    routeIdNomeItinerarioTuple.flatMap({case (id, nomeItinerario) =>
+      routeIdNameTuple.find(_._1 == id).map { case (_, name) =>
+        new Route(name, id, nomeItinerario)
+      }
+    })
   }
 
   def getSelectNode(): TagNode = {
@@ -25,14 +38,25 @@ object RoutesScraper {
   }
 
   def getSelectNode(text: String): TagNode = {
-    var props = new CleanerProperties
-    var cleaner = new HtmlCleaner(props)
-    var node = cleaner.clean(text)
-    var selectNodes = node.getElementsByAttValue("name", "SelLinhas", true, true)
+    val props = new CleanerProperties
+    val cleaner = new HtmlCleaner(props)
+    val node = cleaner.clean(text)
+    val selectNodes = node.getElementsByAttValue("name", "SelLinhas", true, true)
     selectNodes(0)
   }
 
-  def parseRoutesFromSelect(selectNode: TagNode ): Seq[Route] = {
+  def getScriptNode(text: String): Option[TagNode] = {
+    val props = new CleanerProperties
+    val cleaner = new HtmlCleaner(props)
+    val node = cleaner.clean(text)
+    val scriptNodeMatcher = """.*arrayitinerario = new Array.*""".r
+    val scriptNodes = node.getElementsByName("script", true).filter({ node =>
+    scriptNodeMatcher.findFirstIn(node.getText.toString).isDefined
+  })
+    scriptNodes.headOption
+  }
+
+  def parseRoutesFromSelect(selectNode: TagNode ): Seq[(String, String)] = {
     val options = selectNode.getElementsByName("option", true)
 
     options.filter { option =>
@@ -40,19 +64,17 @@ object RoutesScraper {
     }.map { option =>
       val routeName = option.getText().toString().trim()
       val routeId = option.getAttributeByName("value")
-      new Route(routeName, routeId, "")
+      (routeId, routeName)
     }
   }
 
-  def parseRoutesFromJavascript(root: TagNode): Seq[Route] = {
+  def parseRoutesFromJavascript(root: TagNode): Seq[(String, String)] = {
     val lines = root.getText.toString.split(";").map(_.trim)
 
     val nomeItinerarios = getNomeItinerariosFrom(lines)
     val routeIds = getRouteIdsFrom(lines)
 
-    routeIds.zip(nomeItinerarios).map { idAndNome =>
-      new Route("", idAndNome._2, idAndNome._1)
-    }
+    routeIds.zip(nomeItinerarios)
   }
 
   def getNomeItinerariosFrom(lines: Seq[String]): Seq[String] = {
