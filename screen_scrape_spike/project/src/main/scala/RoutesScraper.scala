@@ -8,9 +8,9 @@ import org.htmlcleaner._
 
 object RoutesScraper {
   def getRoutes(): Seq[Route] = {
-    val selectNode = getSelectNode()
-    parseRoutesFromSelect(selectNode)
-    Seq(new Route("","",""))
+    val input = new FileInputStream("sample_pages/main.html")
+    val text = io.Source.fromInputStream(input, "ISO-8859-1").mkString
+    getRoutes(text)
   }
 
   def getRoutes(text: String): Seq[Route] = {
@@ -33,7 +33,7 @@ object RoutesScraper {
   def getSelectNode(): TagNode = {
     val url = new URL("http://200.238.84.28/site/consulta/itinerarios_parada_linhas.asp")
     val input = new FileInputStream("sample_pages/main.html")
-    val text = io.Source.fromInputStream(input).mkString
+    val text = io.Source.fromInputStream(input, "ISO-8859-1").mkString
     getSelectNode(text)
   }
 
@@ -45,14 +45,21 @@ object RoutesScraper {
     selectNodes(0)
   }
 
+  def getScriptNode(): Option[TagNode] = {
+    val url = new URL("http://200.238.84.28/site/consulta/itinerarios_parada_linhas.asp")
+    val input = new FileInputStream("sample_pages/main.html")
+    val text = io.Source.fromInputStream(input, "ISO-8859-1").mkString
+    getScriptNode(text)
+  }
+
   def getScriptNode(text: String): Option[TagNode] = {
     val props = new CleanerProperties
     val cleaner = new HtmlCleaner(props)
     val node = cleaner.clean(text)
     val scriptNodeMatcher = """.*arrayitinerario = new Array.*""".r
     val scriptNodes = node.getElementsByName("script", true).filter({ node =>
-    scriptNodeMatcher.findFirstIn(node.getText.toString).isDefined
-  })
+      scriptNodeMatcher.findFirstIn(node.getText.toString).isDefined
+    })
     scriptNodes.headOption
   }
 
@@ -78,7 +85,7 @@ object RoutesScraper {
   }
 
   def getNomeItinerariosFrom(lines: Seq[String]): Seq[String] = {
-    val ItinerarioPattern = """.*arrayitinerario\[0\]\[0\] = \'(.+)\'.*""".r
+    val ItinerarioPattern = """.*arrayitinerario\[1\]\[\d+\] = \'(.+)\'.*""".r
     val nomeItinerarios = lines.flatMap { line =>
       line match {
         case ItinerarioPattern(num) => Some(num)
@@ -89,7 +96,7 @@ object RoutesScraper {
   }
 
   def getRouteIdsFrom(lines: Seq[String]): Seq[String] = {
-    val RouteIdPattern = """.*arrayitinerario\[1\]\[0\] = \'(.+)\'.*""".r
+    val RouteIdPattern = """.*arrayitinerario\[0\]\[\d+\] = \'(.+)\'.*""".r
     val routeIds = lines.flatMap(_ match {
       case RouteIdPattern(num) => Some(num)
       case _ => None

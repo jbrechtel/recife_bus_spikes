@@ -8,7 +8,7 @@ class RouteStopScraperSuite extends FunSuite {
   <select name="SelLinhas" onchange="carreganomeitinerario()" style="width:275">
     <option value="0">--Selecione a Linha--</option>
     <option value="940"> Abreu e Lima/Olinda </option>
-    <option value="34"> Aeroporto </option>
+    <option value="105"> Aeroporto </option>
   </select>
    <script language="javascript"></script>
     <script language="javascript">
@@ -26,20 +26,21 @@ class RouteStopScraperSuite extends FunSuite {
     val root = new HtmlCleaner(new CleanerProperties).clean(rootHtml)
     val routes = RoutesScraper.parseRoutesFromJavascript(root)
     val route = routes(0)
-    assert(route._1 === "34")
-    assert(route._2 === "105")
+    val (id, nomeItinerario) = route
+    assert(nomeItinerario === "34")
+    assert(id === "105")
   }
 
   test("get nome itinerarios from javascript text split by ';'") {
     val lines = Seq("arrayitinerario[0][0] = '105'", "arrayitinerario[1][0] = '34'", "arrayitinerario[2][0] = 'Principal'")
     val nomeItinerarios = RoutesScraper.getNomeItinerariosFrom(lines)
-    assert(nomeItinerarios === Seq("105"))
+    assert(nomeItinerarios === Seq("34"))
   }
 
   test("get route ids from javascript text split by ';'") {
     val lines = Seq("arrayitinerario[0][0] = '105'", "arrayitinerario[1][0] = '34'", "arrayitinerario[2][0] = 'Principal'")
     val routeIds = RoutesScraper.getRouteIdsFrom(lines)
-    assert(routeIds === Seq("34"))
+    assert(routeIds === Seq("105"))
   }
 
   test("gets routes with name and id") {
@@ -52,8 +53,8 @@ class RouteStopScraperSuite extends FunSuite {
     """
     val root = new HtmlCleaner(new CleanerProperties).clean(selectHtml)
     val routes = RoutesScraper.parseRoutesFromSelect(root)
-    val routeNames = routes.map(_._2)
-    val routeIds = routes.map(_._1)
+    val routeNames = routes.map{case (id, name) => name}
+  val routeIds = routes.map{case (id, name) => id}
     assert(routeNames === Seq("Abreu e Lima/Olinda", "Aeroporto"))
     assert(routeIds === Seq("940", "34"))
   }
@@ -71,8 +72,12 @@ class RouteStopScraperSuite extends FunSuite {
 
   test("getting list of routes from getRoutes") {
     val routes = RoutesScraper.getRoutes(rootHtml)
-    assert(routes(0).id === "34")
-    assert(routes(0).nomeItinerario === "105")
+    assert(routes(0).id === "105")
+    assert(routes(0).nomeItinerario === "34")
     assert(routes(0).name === "Aeroporto")
+  }
+
+  test("get routes from file") {
+    assert(RoutesScraper.getRoutes().length === 484)
   }
 }
