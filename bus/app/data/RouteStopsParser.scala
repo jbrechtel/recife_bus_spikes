@@ -2,7 +2,6 @@ package recifeBuses
 
 object RouteStopsParser {
   import org.htmlcleaner._
-  import recifeBuses.Stop
   import models._
 
   def parseStopsFromRows(rows: Array[TagNode]): List[Stop] = {

@@ -8,16 +8,14 @@ object StopsScraper {
   import models._
 
   def getStops(route: Route): List[Stop] = {
-    var node = getRootTagNode()
-    var rows = node.getElementsByName("tr", true)
-    rows = rows.filter(r => isRouteStopRow(r))
-    RouteStopsParser.parseStopsFromRows(rows)
+    val rows = getRootTagNode(route).getElementsByName("tr", true)
+    RouteStopsParser.parseStopsFromRows(rows.filter(r => isRouteStopRow(r)))
   }
-  
-  def getRootTagNode(): TagNode = {
+
+  def getRootTagNode(route: Route): TagNode = {
     var props = new CleanerProperties
     var cleaner = new HtmlCleaner(props)
-    val file = new File("sample_pages/route.html")
+    val file = new File("app/data/sample_pages/route.html")
     cleaner.clean(new FileInputStream(file))
   }
 
@@ -27,6 +25,5 @@ object StopsScraper {
         return true
     false
   }
-
-}  
+}
 

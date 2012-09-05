@@ -1,4 +1,4 @@
-package recifeBuses
-class Stop(codigo: String, bairro: String, logradouro: String, referencia: String, latitude: String, longitude: String) {
+package models
+class Stop(val codigo: String, val bairro: String, val logradouro: String, val referencia: String, val latitude: String, val longitude: String) {
 
 }
