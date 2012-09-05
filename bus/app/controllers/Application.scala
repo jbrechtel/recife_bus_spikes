@@ -2,10 +2,12 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import recifeBuses._
 
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index(RoutesScraper.getRoutes))
+    val routes = RoutesScraper.getRoutes
+    Ok(views.html.index(routes))
   }
 }

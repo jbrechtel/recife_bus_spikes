@@ -1,0 +1,17 @@
+@(routes: Seq[Route]))
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Routes view</title>
+  </head>
+  <body>
+    <p> Hello Play World! </p>
+    <ul>
+    @routes.map { route =>
+      <li> @route.name ": " @route.id ", " @route.nomeItinerario </li>
+    }
+    </ul>
+  <body>
+</html>
+
