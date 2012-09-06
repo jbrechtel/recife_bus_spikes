@@ -4,14 +4,12 @@ import models._
 
 object PageScraper {
 
-  def main(args: Array[String]) {
-    var routes = RoutesScraper.getRoutes();
-    println("Found " + routes.length + " routes")
-    var stops = findStopsForRoutes(routes)
-      println("Found " + stops.length + " stops")
+  def parse = {
+    val routes = RoutesScraper.getRoutes();
+    findStopsForRoutes(routes)
   }
 
-  def findStopsForRoutes(routes: Seq[Route]): Seq[Seq[Stop]] = {
-    routes.map(StopsScraper.getStops(_))
+  def findStopsForRoutes(routes: Seq[Route]): Seq[Route] = {
+    routes.map(route => route.copy(stops = StopsScraper.getStops(route)))
   }
 }

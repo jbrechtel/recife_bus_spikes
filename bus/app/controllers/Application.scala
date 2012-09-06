@@ -7,7 +7,7 @@ import recifeBuses._
 object Application extends Controller {
 
   def index = Action {
-    val routes = RoutesScraper.getRoutes
+    val routes = PageScraper.parse
     Ok(views.html.index(routes))
   }
 }

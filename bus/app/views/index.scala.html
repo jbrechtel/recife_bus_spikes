@@ -8,8 +8,13 @@
   <body>
     <p> Hello Play World! </p>
     <ul>
-    @routes.map { route =>
-      <li> @route.name ": " @route.id ", " @route.nomeItinerario </li>
+    @for(route <- routes) {
+    <li> @{route.name + ": " + route.id + ", " + route.nomeItinerario} </li>
+      <ul>
+        @route.stops.map { stop =>
+        <li> @{stop.referencia} </li>
+      }
+    </ul>
     }
     </ul>
   <body>

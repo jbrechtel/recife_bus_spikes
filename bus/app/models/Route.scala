@@ -1,3 +1,4 @@
 package models
-class Route(val name: String, val id: String, val nomeItinerario: String) {
+case class Route(name: String, id: String, nomeItinerario: String, stops: Seq[Stop]) {
+  def this(name: String, id: String, nomeItinerario: String) = this(name,id,nomeItinerario,Nil)
 }
