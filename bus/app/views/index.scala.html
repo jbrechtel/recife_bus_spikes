@@ -11,7 +11,7 @@
     @for(route <- routes) {
     <li> @{route.name + ": " + route.id + ", " + route.nomeItinerario} </li>
       <ul>
-        @route.stops.map { stop =>
+        @for(stop <- route.stops) {
         <li> @{stop.referencia} </li>
       }
     </ul>
