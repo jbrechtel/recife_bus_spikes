@@ -10,6 +10,7 @@ object PageScraper {
   }
 
   def findStopsForRoutes(routes: Seq[Route]): Seq[Route] = {
-    routes.map(route => route.copy(stops = StopsScraper.getStops(route)))
+    routes.par.map(route => route.copy(stops = StopsScraper.getStops(route))).seq
   }
+
 }
