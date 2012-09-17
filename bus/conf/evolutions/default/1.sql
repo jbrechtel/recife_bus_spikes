@@ -2,6 +2,7 @@
 
 CREATE TABLE Routes (
   id int NOT NULL AUTO_INCREMENT,
+  externalRouteId varchar(20) NOT NULL,
   name varchar(255) NOT NULL,
   nomeItinerario varchar(255) NOT NULL,
   PRIMARY KEY (id)
@@ -9,6 +10,7 @@ CREATE TABLE Routes (
 
 CREATE TABLE Stops (
   id int NOT NULL AUTO_INCREMENT,
+  externalStopId varchar(20) NOT NULL,
   routeId int,
   codigo varchar(255) NOT NULL,
   bairro varchar(255) NOT NULL,
