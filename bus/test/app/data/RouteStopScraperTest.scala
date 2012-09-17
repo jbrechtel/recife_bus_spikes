@@ -72,7 +72,7 @@ class RouteStopScraperSuite extends FunSuite {
 
   test("getting list of routes from getRoutes") {
     val routes = RoutesScraper.getRoutes(rootHtml)
-    assert(routes(0).id === "105")
+    assert(routes(0).externalRouteId === "105")
     assert(routes(0).nomeItinerario === "34")
     assert(routes(0).name === "Aeroporto")
   }

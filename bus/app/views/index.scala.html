@@ -9,7 +9,7 @@
     <p> Hello Play World! </p>
     <ul>
     @for(route <- routes) {
-    <li> @{route.name + ": " + route.id + ", " + route.nomeItinerario} </li>
+    <li> @{route.name + ": " + route.externalRouteId + ", " + route.nomeItinerario} </li>
       <ul>
         @for(stop <- route.stops) {
         <li> @{stop.referencia} </li>
