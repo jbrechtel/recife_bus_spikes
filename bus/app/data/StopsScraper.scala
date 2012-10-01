@@ -7,6 +7,9 @@ object StopsScraper {
   import recifeBuses._
   import models._
 
+  // An example url for stops.  The linha and nomeItinerario are available on the Route object
+  // http://200.238.84.28/site/consulta/itinerarios_parada_linhas.asp?linha=36&nomeitinerario=5673
+
   def getStops(route: Route): List[Stop] = {
     val rows = getRootTagNode(route).getElementsByName("tr", true)
     RouteStopsParser.parseStopsFromRows(rows.filter(r => isRouteStopRow(r)))
